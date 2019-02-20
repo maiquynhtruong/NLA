@@ -29,8 +29,18 @@ def MultiLinearSolve(A, bs):
 def MultiLUsolve(A, bs):
     # LU decomposition of A. p is permutation matrix
     p, l, u = spla.lu(A)
+    ys, xs = [], []
+
+    bs = MultiLinearSolve(p,bs) # Instead of b, we need  p-1 b
+
     # The original system is LUx = b. Now find y such that Ly = b
-    ys = np.stack([spla.solve_triangular(l, b, lower=True) for b in bs])
+    for k in range(len(bs[0])):
+        ys.append(spla.solve_triangular(l, bs[:,k], lower=True))
+    ys = np.stack(ys).T
+
     # Then find x such that Ux = y
-    xs = np.stack([spla.solve_triangular(y, b) for b in bs])
+    for k in range(len(ys[0])):
+        xs.append(spla.solve_triangular(u, ys[:,k]))
+    xs = np.stack(xs).T
+
     return xs
