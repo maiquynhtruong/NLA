@@ -19,7 +19,11 @@ import scipy.linalg as spla
 
 # Problem #2
 def MultiLinearSolve(A, bs):
-    return np.stack([np.linalg.solve(A, b) for b in bs])
+    xs = []
+    for k in range(len(bs[0])):
+        xs.append(np.linalg.solve(A, bs[:,k]))
+
+    return np.stack(xs).T
 
 # Problem #3
 def MultiLUsolve(A, bs):
